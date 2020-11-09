@@ -28,13 +28,19 @@ public class WardControllerTest {
     @Autowired
     private TestRestTemplate restTemplate = null;
     private String baseURL = "http://localhost:8080/ward/";
+    
+    String adminUserName = "admin";
+        String adminPassword = "admin";
+    
+        String UserName = "client";
+        String userPassword = "password";
 
     @Test
     public void a_create() {
         String url = baseURL + "create";
         System.out.println("URL: " + url);
         System.out.println("Post data: " + ward);
-        ResponseEntity<Ward> postResponse = restTemplate.postForEntity(url, ward, Ward.class);
+        ResponseEntity<Ward> postResponse = restTemplate.withBasicAuth(adminUserName,adminPassword).postForEntity(url, ward, Ward.class);
         assertNotNull(postResponse);
         assertNotNull(postResponse.getBody());
         ward = postResponse.getBody();
@@ -46,7 +52,7 @@ public class WardControllerTest {
     public void b_read() {
         String url = baseURL + "read/" + ward.getWardId();
         System.out.println("URL: " + url);
-        ResponseEntity<Ward> response = restTemplate.getForEntity(url, Ward.class);
+        ResponseEntity<Ward> response = restTemplate.withBasicAuth(adminUserName,adminPassword).getForEntity(url, Ward.class);
         assertEquals(ward.getWardId(), response.getBody().getWardId());
     }
 
@@ -57,7 +63,7 @@ public class WardControllerTest {
         String url = baseURL + "update";
         System.out.println("URL: " + url);
         System.out.println("Post data: " + update);
-        ResponseEntity<Ward> response = restTemplate.postForEntity(url, update, Ward.class);
+        ResponseEntity<Ward> response = restTemplate.withBasicAuth(adminUserName,adminPassword).postForEntity(url, update, Ward.class);
         assertNotEquals(ward.getWardSize(), response.getBody().getWardSize());
     }
 
@@ -67,7 +73,7 @@ public class WardControllerTest {
         System.out.println("URL: " + url);
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth(adminUserName,adminPassword).exchange(url, HttpMethod.GET, entity, String.class);
 
         System.out.println(response);
         System.out.println(response.getBody());
