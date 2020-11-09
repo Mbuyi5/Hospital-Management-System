@@ -32,12 +32,19 @@ public class AppointmentControllerTest {
     private TestRestTemplate restTemplate = null;
     private String baseURL = "http://localhost:8080/appointment/";
 
+        
+        String adminUserName = "admin";
+        String adminPassword = "admin";
+    
+        String UserName = "client";
+        String userPassword = "password";
+
     @Test
     public void a_create() {
         String url = baseURL + "create";
         System.out.println("URL: " + url);
         System.out.println("Post data: " + appointment);
-        ResponseEntity<Appointment> postResponse = restTemplate.postForEntity(url, appointment, Appointment.class);
+        ResponseEntity<Appointment> postResponse = restTemplate.withBasicAuth(UserName,userPassword).postForEntity(url, appointment, Appointment.class);
         assertNotNull(postResponse);
         assertNotNull(postResponse.getBody());
         appointment = postResponse.getBody();
@@ -49,7 +56,7 @@ public class AppointmentControllerTest {
     public void b_read() {
         String url = baseURL + "read/" + appointment.getAppointmentId();
         System.out.println("URL: " + url);
-        ResponseEntity<Appointment> response = restTemplate.getForEntity(url, Appointment.class);
+        ResponseEntity<Appointment> response = restTemplate.withBasicAuth(adminUserName,adminPassword).getForEntity(url, Appointment.class);
         assertEquals(appointment.getAppointmentId(), response.getBody().getAppointmentId());
     }
 
@@ -60,7 +67,7 @@ public class AppointmentControllerTest {
         String url = baseURL + "update";
         System.out.println("URL: " + url);
         System.out.println("Post data: " + update);
-        ResponseEntity<Appointment> response = restTemplate.postForEntity(url, update, Appointment.class);
+        ResponseEntity<Appointment> response = restTemplate.withBasicAuth(adminUserName,adminPassword).postForEntity(url, update, Appointment.class);
         assertNotEquals(appointment.getBookingDate(), response.getBody().getBookingDate());
     }
 
@@ -70,7 +77,7 @@ public class AppointmentControllerTest {
         System.out.println("URL: " + url);
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+        ResponseEntity<String> response = restTemplate.withBasicAuth(adminUserName,adminPassword).exchange(url, HttpMethod.GET, entity, String.class);
 
         System.out.println(response);
         System.out.println(response.getBody());
@@ -78,7 +85,7 @@ public class AppointmentControllerTest {
 
     @Test
     public void e_delete() {
-        String url = baseURL + "delete/" + appointment.getAppointmentId();
+        String url = baseURL + "delete/" + appointment.withBasicAuth(adminUserName,adminPassword).getAppointmentId();
         System.out.println("URL: " + url);
         restTemplate.delete(url);
     }
